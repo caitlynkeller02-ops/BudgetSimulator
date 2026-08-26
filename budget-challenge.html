@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Money Moves — Classroom Budget Challenge</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#eef3f8;color:#17212b}
+.wrap{max-width:1050px;margin:auto;padding:18px}
+header{background:#17324d;color:#fff;border-radius:18px;padding:22px;margin-bottom:16px}
+header h1{margin:0 0 6px;font-size:31px}
+header p{margin:0;opacity:.9}
+.card{background:#fff;border-radius:16px;padding:18px;margin-bottom:16px;box-shadow:0 3px 12px #00000010}
+.grid{display:grid;grid-template-columns:1.35fr .65fr;gap:16px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+label{font-weight:700;display:block;margin:8px 0 5px}
+input,select{width:100%;padding:11px;border:1px solid #ccd5de;border-radius:9px;font-size:16px}
+button{border:0;border-radius:10px;padding:11px 14px;font-weight:700;cursor:pointer;background:#2f6fed;color:#fff;margin:4px 3px}
+button:hover{filter:brightness(.95)}
+button.secondary{background:#e8edf3;color:#17212b}
+button.good{background:#258a59}
+button.warn{background:#c87b20}
+button.bad{background:#bd3c3c}
+.money{font-size:38px;font-weight:800;color:#19734a}
+.money.negative{color:#b42318}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:#f4f7fa;border-radius:10px;padding:10px;text-align:center}
+.stat b{display:block;font-size:20px}
+.progress{height:12px;background:#e5e9ed;border-radius:20px;overflow:hidden;margin:9px 0}
+.bar{height:100%;background:#3ca66b;width:100%;transition:.3s}
+.expense{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #edf0f3;padding:10px 0;gap:8px}
+.expense:last-child{border-bottom:0}
+.pill{font-size:11px;padding:4px 7px;border-radius:99px;background:#e9f2ff;color:#2456a6;font-weight:700}
+.need{background:#eaf7ef;color:#207043}.want{background:#fff3df;color:#966018}
+.event{background:#fff7df;border:2px solid #edcf72;border-radius:13px;padding:15px}
+.event h3{margin-top:0}
+.choice{display:block;width:100%;text-align:left;background:#fff;color:#17212b;border:1px solid #d7dee5}
+.choice:hover{background:#f3f6f9}
+.feedback{padding:12px;border-radius:10px;background:#edf7f1;margin-top:10px}
+.hidden{display:none}
+.small{font-size:13px;color:#66727d}
+.big{font-size:22px;font-weight:800}
+ul{padding-left:22px}
+@media(max-width:800px){.grid{grid-template-columns:1fr}.row{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr 1fr}.wrap{padding:10px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<h1>💰 Money Moves: Classroom Budget Challenge</h1>
+<p>You're in charge of your money for one month. Make choices, handle surprises, and see how well you can budget!</p>
+</header>
+
+<section id="setup" class="card">
+<h2>👋 Step 1: Build Your Profile</h2>
+<div class="row">
+<div>
+<label for="student">First name or nickname</label>
+<input id="student" placeholder="Example: Jordan">
+</div>
+<div>
+<label for="job">Choose your job</label>
+<select id="job">
+<option value="2200">🍔 Restaurant Worker — $2,200/month</option>
+<option value="2700">🏪 Store Assistant — $2,700/month</option>
+<option value="3200">💻 Office Assistant — $3,200/month</option>
+</select>
+</div>
+</div>
+<label for="savings">Starting savings</label>
+<select id="savings">
+<option value="300">$300</option><option value="600">$600</option><option value="1000">$1,000</option>
+</select>
+<p class="small">💡 Different jobs and savings amounts give you different starting situations. There is no single "right" answer.</p>
+<button onclick="startGame()">Start My Budget Challenge 🚀</button>
+</section>
+
+<div id="game" class="hidden">
+<section class="card">
+<div class="small">CURRENT BALANCE</div>
+<div id="balance" class="money">$0</div>
+<div class="progress"><div id="bar" class="bar"></div></div>
+<div class="stats">
+<div class="stat">Day <b id="day">1</b>/30</div>
+<div class="stat">Month <b id="month">1</b></div>
+<div class="stat">Score <b id="score">0</b></div>
+</div>
+</section>
+
+<div class="grid">
+<main>
+<section class="card">
+<h2>🏠 Step 2: Pay Your Monthly Needs</h2>
+<p class="small">Needs are things you generally must pay for. Pay each bill once per month.</p>
+<div id="bills"></div>
+</section>
+
+<section class="card">
+<h2>🛍️ Step 3: Daily Choices</h2>
+<p class="small">Wants aren't automatically bad! The challenge is deciding when you can afford them.</p>
+<div class="expense"><span>🥤 Snack/drink <span class="pill want">WANT</span></span><b>$4</b><button class="warn" onclick="buy(4,'Snack/drink')">Buy</button></div>
+<div class="expense"><span>🍔 Fast-food lunch <span class="pill want">WANT</span></span><b>$12</b><button class="warn" onclick="buy(12,'Fast-food lunch')">Buy</button></div>
+<div class="expense"><span>🎮 Entertainment <span class="pill want">WANT</span></span><b>$10</b><button class="warn" onclick="buy(10,'Entertainment')">Buy</button></div>
+<div class="expense"><span>🚗 Extra transportation <span class="pill need">NEED</span></span><b>$8</b><button onclick="buy(8,'Extra transportation')">Pay</button></div>
+</section>
+
+<section class="card">
+<h2>⚡ Step 4: Life Happens!</h2>
+<div id="event" class="event">
+<h3>🌤️ Normal day</h3>
+<p>Advance to the next day. You may get an unexpected event!</p>
+<button onclick="nextDay()">Next Day ➜</button>
+</div>
+<div id="feedback"></div>
+</section>
+</main>
+
+<aside>
+<section class="card">
+<h2>📊 My Budget</h2>
+<p>Money spent: <b id="spent">$0</b></p>
+<p>Emergencies handled: <b id="emergencies">0</b></p>
+<p>Savings goal: <b>$500</b></p>
+<p id="goalText" class="small">Try to finish with at least $500.</p>
+</section>
+
+<section class="card">
+<h2>🧠 Money Tip</h2>
+<p id="tip">A budget is a plan for how you will use your money before you spend it.</p>
+<button class="secondary" onclick="newTip()">New Tip</button>
+</section>
+
+<section class="card">
+<h2>🎯 Your Mission</h2>
+<ul>
+<li>Pay your needs.</li>
+<li>Make smart choices about wants.</li>
+<li>Handle emergencies.</li>
+<li>Try to finish with money left.</li>
+<li>Reach the $500 savings goal if possible.</li>
+</ul>
+<button class="secondary" onclick="showTeacher()">Teacher Discussion</button>
+</section>
+</aside>
+</div>
+</div>
+
+<section id="results" class="card hidden"></section>
+
+<script>
+let balance=0,income=0,spent=0,day=0,month=1,score=0,emergencies=0;
+let paid={};
+let maxBalance=0;
+
+const bills=[
+["🏠 Housing",900,"need"],["💡 Utilities",180,"need"],["🛒 Groceries",300,"need"],
+["📱 Phone",70,"need"],["🚗 Transportation",250,"need"]
+];
+
+const events=[
+{title:"🚗 Car Trouble",text:"Your transportation suddenly needs a repair.",choices:[
+["Pay $350 for the repair",350,2],["Find a cheaper repair shop for $180",180,3],["Use public transportation for $40",40,4]]},
+{title:"🦷 Dental Emergency",text:"You need an unexpected dental visit.",choices:[
+["Pay the $300 bill",300,2],["Pay $100 today and delay the rest",100,3],["Skip it for now",0,0]]},
+{title:"📱 Broken Phone",text:"Your phone screen breaks.",choices:[
+["Replace the phone for $500",500,1],["Repair it for $150",150,3],["Use an old phone",0,4]]},
+{title:"🐕 Pet Emergency",text:"Your pet needs an unexpected vet visit.",choices:[
+["Full vet visit: $250",250,2],["Basic visit: $100",100,3],["Wait and risk another $200 later",200,1]]},
+{title:"🏠 Home Problem",text:"A pipe leaks and needs a quick repair.",choices:[
+["Emergency repair: $400",400,2],["Buy supplies and fix it: $80",80,4],["Wait: $200 later",200,1]]}
+];
+
+const tips=[
+"Needs come before wants. Housing, food, transportation and utilities are usually priorities.",
+"An emergency fund gives you options when something unexpected happens.",
+"$4 every day for 30 days would cost $120. Small purchases can add up!",
+"Before buying something, ask: Do I need it, or do I want it?",
+"A good budget leaves room for both necessities and fun.",
+"Saving money is a choice you make with every purchase."
+];
+
+function money(n){return (n<0?"-$":"$")+Math.abs(n).toLocaleString();}
+function renderBills(){
+document.getElementById("bills").innerHTML=bills.map((b,i)=>`
+<div class="expense"><span>${b[0]} <span class="pill need">NEED</span></span><b>$${b[1]}</b>
+<button id="bill${i}" onclick="payBill(${i})">Pay</button></div>`).join("");
+}
+function startGame(){
+income=+document.getElementById("job").value;
+balance=income/2 + +document.getElementById("savings").value;
+spent=0;day=1;month=1;score=0;emergencies=0;paid={};maxBalance=balance;
+document.getElementById("setup").classList.add("hidden");
+document.getElementById("game").classList.remove("hidden");
+document.getElementById("results").classList.add("hidden");
+renderBills(); update();
+}
+function update(){
+document.getElementById("balance").textContent=money(balance);
+document.getElementById("balance").className="money "+(balance<0?"negative":"");
+document.getElementById("spent").textContent=money(spent);
+document.getElementById("emergencies").textContent=emergencies;
+document.getElementById("day").textContent=day;
+document.getElementById("month").textContent=month;
+document.getElementById("score").textContent=score;
+let pct=Math.max(0,Math.min(100,(balance/1500)*100));
+document.getElementById("bar").style.width=pct+"%";
+document.getElementById("goalText").textContent=balance>=500?"🏆 You have reached the $500 savings goal!":"Try to finish with at least $500.";
+}
+function payBill(i){
+if(paid[i]) return;
+let cost=bills[i][1];
+balance-=cost;spent+=cost;paid[i]=true;score+=2;
+document.getElementById("bill"+i).textContent="Paid ✓";
+document.getElementById("bill"+i).disabled=true;
+update();
+}
+function buy(cost,name){
+if(balance<cost){alert("You don't have enough money for this purchase right now.");return;}
+balance-=cost;spent+=cost;score-=1;
+showFeedback("You spent $"+cost+" on "+name+". Was it worth it? Think about what you could have done with that money instead.");
+update();
+}
+function nextDay(){
+if(day>=30){finishGame();return;}
+day++;
+let chance=0.23;
+if(Math.random()<chance){
+ emergencies++;
+ let e=events[Math.floor(Math.random()*events.length)];
+ document.getElementById("event").innerHTML=`<h3>${e.title}</h3><p>${e.text}</p>`+
+ e.choices.map((c,i)=>`<button class="choice" onclick="chooseEvent(${c[1]},${c[2]},'${c[0].replace(/'/g,"\\'")}')">${c[0]}</button>`).join("");
+}else{
+document.getElementById("event").innerHTML=`<h3>🌤️ Normal day</h3><p>No surprise today. Keep watching your spending.</p><button onclick="nextDay()">Next Day ➜</button>`;
+}
+update();
+}
+function chooseEvent(cost,points,label){
+if(cost>balance){showFeedback("⚠️ You couldn't afford that choice, so it costs you 5 points and the emergency remains unpaid.");score-=5;}
+else{balance-=cost;spent+=cost;score+=points;showFeedback("You chose: "+label+". This decision changed your balance by "+money(-cost)+".");}
+document.getElementById("event").innerHTML='<h3>Decision made! ✓</h3><p>Keep going and see what happens next.</p><button onclick="nextDay()">Continue ➜</button>';
+update();
+}
+function showFeedback(t){document.getElementById("feedback").innerHTML='<div class="feedback">'+t+'</div>';}
+function newTip(){document.getElementById("tip").textContent=tips[Math.floor(Math.random()*tips.length)];}
+function finishGame(){
+let final=balance>=500?score+10:score;
+let rating=final>=35?"🏆 Budget Boss":final>=20?"👍 Money Manager":final>=10?"🙂 Getting There":"🧠 Learning the Hard Way";
+let student=document.getElementById("student").value||"Student";
+document.getElementById("game").classList.add("hidden");
+let r=document.getElementById("results");r.classList.remove("hidden");
+r.innerHTML=`<h2>🎉 ${student}'s Month Is Complete!</h2>
+<div class="big">${rating}</div>
+<p>You finished with <b>${money(balance)}</b> and spent <b>${money(spent)}</b>.</p>
+<p>Your score: <b>${final} points</b></p>
+<hr>
+<h3>Think About It 🤔</h3>
+<ul>
+<li>Which expense was hardest to afford?</li>
+<li>Which choice helped your budget the most?</li>
+<li>Did you spend money on any wants that you could have skipped?</li>
+<li>How would having $1,000 in savings change your decisions?</li>
+<li>What would you change if you played again?</li>
+</ul>
+<button onclick="location.reload()">Play Again 🔄</button>
+<button class="secondary" onclick="showTeacher()">Teacher Discussion Guide</button>`;
+}
+function showTeacher(){
+alert("CLASS DISCUSSION:\\n\\n1. What is the difference between a need and a want?\\n2. Why is an emergency fund useful?\\n3. Which job gave you the most flexibility?\\n4. How did small purchases affect your budget?\\n5. What surprised you about budgeting?");
+}
+renderBills();
+</script>
+</body>
+</html>
