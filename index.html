@@ -3,75 +3,720 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Budget Simulator - Money Moves</title>
+  <title>Money Moves — Classroom Budget Challenge</title>
   <style>
     * { box-sizing: border-box; }
     body {
       margin: 0;
       font-family: Arial, Helvetica, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
+      background: #eef3f8;
+      color: #17212b;
+    }
+    .wrap {
+      max-width: 1050px;
+      margin: auto;
+      padding: 18px;
+    }
+    header {
+      background: #17324d;
+      color: #fff;
+      border-radius: 18px;
+      padding: 22px;
+      margin-bottom: 16px;
+    }
+    header h1 {
+      margin: 0 0 6px;
+      font-size: 31px;
+    }
+    header p {
+      margin: 0;
+      opacity: .9;
+    }
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: 0 3px 12px #00000010;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1.35fr .65fr;
+      gap: 16px;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    label {
+      font-weight: 700;
+      display: block;
+      margin: 8px 0 5px;
+    }
+    input, select {
+      width: 100%;
+      padding: 11px;
+      border: 1px solid #ccd5de;
+      border-radius: 9px;
+      font-size: 16px;
+    }
+    button {
+      border: 0;
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-weight: 700;
+      cursor: pointer;
+      background: #2f6fed;
+      color: #fff;
+      margin: 4px 3px;
+    }
+    button:hover {
+      filter: brightness(.95);
+    }
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    button.secondary {
+      background: #e8edf3;
+      color: #17212b;
+    }
+    button.earn {
+      background: #3ca66b;
+    }
+    button.earn:hover {
+      filter: brightness(.95);
+    }
+    button.warn {
+      background: #c87b20;
+    }
+    .money {
+      font-size: 38px;
+      font-weight: 800;
+      color: #19734a;
+    }
+    .money.negative {
+      color: #b42318;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .stat {
+      background: #f4f7fa;
+      border-radius: 10px;
+      padding: 10px;
+      text-align: center;
+    }
+    .stat b {
+      display: block;
+      font-size: 20px;
+    }
+    .progress {
+      height: 12px;
+      background: #e5e9ed;
+      border-radius: 20px;
+      overflow: hidden;
+      margin: 9px 0;
+    }
+    .bar {
+      height: 100%;
+      background: #3ca66b;
+      width: 100%;
+      transition: .3s;
+    }
+    .expense {
       display: flex;
       align-items: center;
-      justify-content: center;
-      padding: 20px;
+      justify-content: space-between;
+      border-bottom: 1px solid #edf0f3;
+      padding: 10px 0;
+      gap: 8px;
     }
-    .container {
-      background: white;
-      border-radius: 20px;
-      padding: 60px 40px;
-      text-align: center;
-      max-width: 600px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    .expense:last-child {
+      border-bottom: 0;
     }
-    h1 {
-      font-size: 48px;
-      margin: 0 0 20px;
-      color: #17324d;
+    .pill {
+      font-size: 11px;
+      padding: 4px 7px;
+      border-radius: 99px;
+      background: #e9f2ff;
+      color: #2456a6;
+      font-weight: 700;
     }
-    .emoji {
-      font-size: 80px;
-      margin-bottom: 20px;
+    .need {
+      background: #eaf7ef;
+      color: #207043;
+    }
+    .want {
+      background: #fff3df;
+      color: #966018;
+    }
+    .income-pill {
+      background: #e8f7ed;
+      color: #1b7a44;
+    }
+    .event {
+      background: #fff7df;
+      border: 2px solid #edcf72;
+      border-radius: 13px;
+      padding: 15px;
+    }
+    .event h3 {
+      margin-top: 0;
+    }
+    .choice {
       display: block;
+      width: 100%;
+      text-align: left;
+      background: #fff;
+      color: #17212b;
+      border: 1px solid #d7dee5;
+      padding: 10px;
+      margin-top: 8px;
     }
-    p {
-      font-size: 18px;
-      color: #555;
-      line-height: 1.6;
-      margin: 15px 0;
+    .choice:hover {
+      background: #f3f6f9;
     }
-    .cta-button {
-      display: inline-block;
-      margin-top: 30px;
-      padding: 18px 50px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      text-decoration: none;
-      font-size: 20px;
-      font-weight: bold;
-      border-radius: 50px;
-      border: none;
-      cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
-      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+    .feedback {
+      padding: 12px;
+      border-radius: 10px;
+      background: #edf7f1;
+      margin-top: 10px;
     }
-    .cta-button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+
+    .puzzle-card {
+      background: #f7f9ff;
+      border: 2px solid #cbd8ff;
+      border-radius: 14px;
+      padding: 15px;
+      margin-top: 12px;
     }
-    .cta-button:active {
-      transform: translateY(0);
+    .puzzle-card h3 { margin-top: 0; }
+    .puzzle-question {
+      font-size: 17px;
+      font-weight: 700;
+      margin: 10px 0;
+    }
+    .puzzle-option {
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: #fff;
+      color: #17212b;
+      border: 1px solid #ccd5de;
+      padding: 11px;
+      margin-top: 8px;
+      border-radius: 9px;
+    }
+    .puzzle-option:hover { background: #eef3ff; }
+    .puzzle-success {
+      background: #eaf7ef;
+      border: 1px solid #9ed3b2;
+      color: #17683f;
+      padding: 10px;
+      border-radius: 9px;
+      margin-top: 10px;
+      font-weight: 700;
+    }
+    .puzzle-fail {
+      background: #fff0ef;
+      border: 1px solid #e2aaa5;
+      color: #9f251b;
+      padding: 10px;
+      border-radius: 9px;
+      margin-top: 10px;
+    }
+    .locked {
+      background: #8b96a3 !important;
+      cursor: not-allowed !important;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+    .small {
+      font-size: 13px;
+      color: #66727d;
+    }
+    .big {
+      font-size: 22px;
+      font-weight: 800;
+    }
+    ul {
+      padding-left: 22px;
+    }
+    main { flex: 1; }
+    aside { flex: 0 0 auto; }
+    @media (max-width: 800px) {
+      .grid { grid-template-columns: 1fr; }
+      .row { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: 1fr 1fr 1fr; }
+      .wrap { padding: 10px; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <span class="emoji">💰</span>
-    <h1>Money Moves</h1>
-    <h2 style="color: #667eea; font-size: 24px; margin-top: 0;">Classroom Budget Challenge</h2>
-    <p>You're in charge of your money for one month. Make smart choices, handle surprises, and see how well you can budget!</p>
-    <p style="font-size: 14px; color: #999;">Learn the basics of personal finance through an interactive simulation.</p>
-    <a href="budget-challenge.html" class="cta-button">Start the Challenge 🚀</a>
+  <div class="wrap">
+    <header>
+      <h1>💰 Money Moves: Classroom Budget Challenge</h1>
+      <p>You're in charge of your money for one month. Solve money puzzles, make choices, handle surprises, and see how well you can budget!</p>
+    </header>
+
+    <section id="setup" class="card">
+      <h2>👋 Step 1: Build Your Profile</h2>
+      <div class="row">
+        <div>
+          <label for="student">First name or nickname</label>
+          <input id="student" placeholder="Example: Jordan">
+        </div>
+        <div>
+          <label for="job">Choose your job</label>
+          <select id="job">
+            <option value="2200">🍔 Restaurant Worker — $2,200/month</option>
+            <option value="2700">🏪 Store Assistant — $2,700/month</option>
+            <option value="3200">💻 Office Assistant — $3,200/month</option>
+          </select>
+        </div>
+      </div>
+      <label for="savings">Starting savings</label>
+      <select id="savings">
+        <option value="300">$300</option>
+        <option value="600">$600</option>
+        <option value="1000">$1,000</option>
+      </select>
+      <p class="small">💡 Different jobs and savings amounts give you different starting situations. There is no single "right" answer.</p>
+      <button onclick="window.gameApp.startGame()">Start My Budget Challenge 🚀</button>
+    </section>
+
+    <div id="game" class="hidden">
+      <section class="card">
+        <div class="small">CURRENT BALANCE</div>
+        <div id="balance" class="money">$0</div>
+        <div class="progress"><div id="bar" class="bar"></div></div>
+        <div class="stats">
+          <div class="stat">Day <b id="day">1</b>/30</div>
+          <div class="stat">Month <b id="month">1</b></div>
+          <div class="stat">Score <b id="score">0</b></div>
+        </div>
+      </section>
+
+      <div class="grid">
+        <main>
+          <section class="card">
+            <h2>💼 Step 1: Earn Extra Money — Solve to Earn!</h2>
+            <p class="small">Each side gig is locked until you solve its money puzzle. You can retry a puzzle if you miss it.</p>
+            <div class="expense"><span>📦 Freelance project <span class="pill income-pill">+$35</span></span><button id="gig0" class="earn locked" onclick="window.gameApp.openPuzzle(0)">🔒 Solve Puzzle</button></div>
+            <div class="expense"><span>🧹 Chores for family <span class="pill income-pill">+$15</span></span><button id="gig1" class="earn locked" onclick="window.gameApp.openPuzzle(1)">🔒 Solve Puzzle</button></div>
+            <div class="expense"><span>📚 Tutoring <span class="pill income-pill">+$25</span></span><button id="gig2" class="earn locked" onclick="window.gameApp.openPuzzle(2)">🔒 Solve Puzzle</button></div>
+            <div class="expense"><span>🚲 Delivery service <span class="pill income-pill">+$40</span></span><button id="gig3" class="earn locked" onclick="window.gameApp.openPuzzle(3)">🔒 Solve Puzzle</button></div>
+            <div id="puzzleArea" class="puzzle-card hidden"></div>
+          </section>
+
+          <section class="card">
+            <h2>🏠 Step 2: Pay Your Monthly Needs</h2>
+            <p class="small">Needs are things you generally must pay for. Pay each bill once per month.</p>
+            <div id="bills"></div>
+          </section>
+
+          <section class="card">
+            <h2>🛍️ Step 3: Daily Choices</h2>
+            <p class="small">Wants aren't automatically bad! The challenge is deciding when you can afford them.</p>
+            <div class="expense"><span>🥤 Snack/drink <span class="pill want">WANT</span></span><b>$4</b><button class="warn" onclick="window.gameApp.buy(4,'Snack/drink')">Buy</button></div>
+            <div class="expense"><span>🍔 Fast-food lunch <span class="pill want">WANT</span></span><b>$12</b><button class="warn" onclick="window.gameApp.buy(12,'Fast-food lunch')">Buy</button></div>
+            <div class="expense"><span>🎮 Entertainment <span class="pill want">WANT</span></span><b>$10</b><button class="warn" onclick="window.gameApp.buy(10,'Entertainment')">Buy</button></div>
+            <div class="expense"><span>🚗 Extra transportation <span class="pill need">NEED</span></span><b>$8</b><button onclick="window.gameApp.buy(8,'Extra transportation')">Pay</button></div>
+          </section>
+
+          <section class="card">
+            <h2>⚡ Step 4: Life Happens!</h2>
+            <div id="event" class="event">
+              <h3>🌤️ Normal day</h3>
+              <p>Advance to the next day. You may get an unexpected event!</p>
+              <button onclick="window.gameApp.nextDay()">Next Day ➜</button>
+            </div>
+            <div id="feedback"></div>
+          </section>
+        </main>
+
+        <aside>
+          <section class="card">
+            <h2>📊 My Budget</h2>
+            <p>Money earned: <b id="earned">$0</b></p>
+            <p>Money spent: <b id="spent">$0</b></p>
+            <p>Emergencies handled: <b id="emergencies">0</b></p>
+            <p>Savings goal: <b>$500</b></p>
+            <p id="goalText" class="small">Try to finish with at least $500.</p>
+          </section>
+
+          <section class="card">
+            <h2>🧠 Money Tip</h2>
+            <p id="tip">A budget is a plan for how you will use your money before you spend it.</p>
+            <button class="secondary" onclick="window.gameApp.newTip()">New Tip</button>
+          </section>
+
+          <section class="card">
+            <h2>🎯 Your Mission</h2>
+            <ul>
+              <li>Solve money puzzles to unlock side gigs.</li>
+              <li>Pay your needs.</li>
+              <li>Make smart choices about wants.</li>
+              <li>Handle emergencies.</li>
+              <li>Try to finish with money left.</li>
+              <li>Reach the $500 savings goal if possible.</li>
+            </ul>
+            <button class="secondary" onclick="window.gameApp.showTeacher()">Teacher Discussion</button>
+          </section>
+        </aside>
+      </div>
+    </div>
+
+    <section id="results" class="card hidden"></section>
   </div>
+
+  <script>
+window.gameApp = {
+  state: {
+    balance: 0,
+    income: 0,
+    earned: 0,
+    spent: 0,
+    day: 0,
+    score: 0,
+    emergencies: 0,
+    paid: {}
+  },
+  
+  bills: [
+    ["🏠 Housing", 900],
+    ["💡 Utilities", 180],
+    ["🛒 Groceries", 300],
+    ["📱 Phone", 70],
+    ["🚗 Transportation", 250]
+  ],
+
+  events: [
+    {
+      title: "🚗 Car Trouble",
+      text: "Your transportation suddenly needs a repair.",
+      choices: [
+        ["Pay $350 for the repair", 350, 2],
+        ["Find a cheaper repair shop for $180", 180, 3],
+        ["Use public transportation for $40", 40, 4]
+      ]
+    },
+    {
+      title: "🦷 Dental Emergency",
+      text: "You need an unexpected dental visit.",
+      choices: [
+        ["Pay the $300 bill", 300, 2],
+        ["Pay $100 today and delay the rest", 100, 3],
+        ["Skip it for now", 0, 0]
+      ]
+    },
+    {
+      title: "📱 Broken Phone",
+      text: "Your phone screen breaks.",
+      choices: [
+        ["Replace the phone for $500", 500, 1],
+        ["Repair it for $150", 150, 3],
+        ["Use an old phone", 0, 4]
+      ]
+    },
+    {
+      title: "🐕 Pet Emergency",
+      text: "Your pet needs an unexpected vet visit.",
+      choices: [
+        ["Full vet visit: $250", 250, 2],
+        ["Basic visit: $100", 100, 3],
+        ["Wait and risk another $200 later", 200, 1]
+      ]
+    },
+    {
+      title: "🏠 Home Problem",
+      text: "A pipe leaks and needs a quick repair.",
+      choices: [
+        ["Emergency repair: $400", 400, 2],
+        ["Buy supplies and fix it: $80", 80, 4],
+        ["Wait: $200 later", 200, 1]
+      ]
+    }
+  ],
+
+  puzzles: [
+    {
+      gig: "Freelance project", amount: 35,
+      question: "You are paid $15 per hour and work 3 hours. How much do you earn?",
+      choices: ["$18", "$45", "$50", "$60"], answer: 1,
+      explanation: "$15 × 3 hours = $45."
+    },
+    {
+      gig: "Chores for family", amount: 15,
+      question: "You earn $5 for each chore. You complete 3 chores. How much do you earn?",
+      choices: ["$8", "$10", "$15", "$20"], answer: 2,
+      explanation: "$5 × 3 chores = $15."
+    },
+    {
+      gig: "Tutoring", amount: 25,
+      question: "You tutor for 2 hours at $12 per hour and receive a $1 bonus. How much do you earn?",
+      choices: ["$23", "$24", "$25", "$26"], answer: 2,
+      explanation: "$12 × 2 = $24, then $1 bonus = $25."
+    },
+    {
+      gig: "Delivery service", amount: 40,
+      question: "A delivery pays $50, but you spend $10 on gas. What is your profit?",
+      choices: ["$40", "$45", "$50", "$60"], answer: 0,
+      explanation: "$50 income − $10 gas = $40 profit."
+    }
+  ],
+
+  tips: [
+    "Needs come before wants. Housing, food, transportation and utilities are usually priorities.",
+    "An emergency fund gives you options when something unexpected happens.",
+    "$4 every day for 30 days would cost $120. Small purchases can add up!",
+    "Before buying something, ask: Do I need it, or do I want it?",
+    "A good budget leaves room for both necessities and fun.",
+    "Saving money is a choice you make with every purchase.",
+    "Side gigs can help you earn extra money to reach your savings goals faster.",
+    "Time is money—earning extra income requires effort but pays off!"
+  ],
+
+  money: function(n) {
+    return (n < 0 ? "-$" : "$") + Math.abs(n).toLocaleString();
+  },
+
+  renderBills: function() {
+    const billsDiv = document.getElementById("bills");
+    billsDiv.innerHTML = "";
+    this.bills.forEach((b, i) => {
+      const div = document.createElement("div");
+      div.className = "expense";
+      div.innerHTML = `<span>${b[0]} <span class="pill need">NEED</span></span><b>$${b[1]}</b><button id="bill${i}" onclick="window.gameApp.payBill(${i})">Pay</button>`;
+      billsDiv.appendChild(div);
+    });
+  },
+
+  startGame: function() {
+    this.state.income = +document.getElementById("job").value;
+    this.state.balance = this.state.income / 2 + +document.getElementById("savings").value;
+    this.state.earned = 0;
+    this.state.spent = 0;
+    this.state.day = 1;
+    this.state.score = 0;
+    this.state.emergencies = 0;
+    this.state.paid = {};
+    this.state.puzzlesSolved = {};
+    this.state.activePuzzle = null;
+    document.getElementById("puzzleArea").classList.add("hidden");
+    
+    document.getElementById("setup").classList.add("hidden");
+    document.getElementById("game").classList.remove("hidden");
+    document.getElementById("results").classList.add("hidden");
+    
+    this.renderBills();
+    this.updateGigButtons();
+    this.update();
+  },
+
+  update: function() {
+    document.getElementById("balance").textContent = this.money(this.state.balance);
+    document.getElementById("balance").className = "money " + (this.state.balance < 0 ? "negative" : "");
+    document.getElementById("earned").textContent = this.money(this.state.earned);
+    document.getElementById("spent").textContent = this.money(this.state.spent);
+    document.getElementById("emergencies").textContent = this.state.emergencies;
+    document.getElementById("day").textContent = this.state.day;
+    document.getElementById("score").textContent = this.state.score;
+    
+    let pct = Math.max(0, Math.min(100, (this.state.balance / 1500) * 100));
+    document.getElementById("bar").style.width = pct + "%";
+    
+    if (this.state.balance >= 500) {
+      document.getElementById("goalText").textContent = "🏆 You have reached the $500 savings goal!";
+    } else {
+      document.getElementById("goalText").textContent = "Try to finish with at least $500.";
+    }
+  },
+
+
+  openPuzzle: function(index) {
+    if (this.state.puzzlesSolved[index]) return;
+    this.state.activePuzzle = index;
+    const p = this.puzzles[index];
+    const area = document.getElementById("puzzleArea");
+    let choices = "";
+    p.choices.forEach((choice, i) => {
+      choices += `<button class="puzzle-option" onclick="window.gameApp.answerPuzzle(${i})">${String.fromCharCode(65+i)}. ${choice}</button>`;
+    });
+    area.innerHTML = `<h3>🧩 Money Puzzle: ${p.gig}</h3>
+      <p class="small">Solve this correctly to unlock your $${p.amount} payment.</p>
+      <div class="puzzle-question">${p.question}</div>
+      ${choices}
+      <div id="puzzleFeedback"></div>`;
+    area.classList.remove("hidden");
+    area.scrollIntoView({behavior:"smooth", block:"center"});
+  },
+
+  answerPuzzle: function(choiceIndex) {
+    const index = this.state.activePuzzle;
+    if (index === null) return;
+    const p = this.puzzles[index];
+    const feedback = document.getElementById("puzzleFeedback");
+    if (choiceIndex === p.answer) {
+      this.state.puzzlesSolved[index] = true;
+      this.state.activePuzzle = null;
+      this.state.score += 3;
+      feedback.innerHTML = `<div class="puzzle-success">✅ Correct! ${p.explanation} You unlocked $${p.amount}.</div>
+        <button class="earn" onclick="window.gameApp.claimGig(${index})">💵 Claim $${p.amount}</button>`;
+      document.querySelectorAll(".puzzle-option").forEach(b => b.disabled = true);
+      this.updateGigButtons();
+      this.update();
+    } else {
+      this.state.score = Math.max(0, this.state.score - 1);
+      feedback.innerHTML = `<div class="puzzle-fail">❌ Not quite. Try again! Read the numbers carefully and think about what the question is asking.</div>`;
+      this.update();
+    }
+  },
+
+  claimGig: function(index) {
+    if (!this.state.puzzlesSolved[index]) return;
+    const p = this.puzzles[index];
+    if (this.state.puzzlesSolved[index] === "claimed") return;
+    this.state.puzzlesSolved[index] = "claimed";
+    this.earnMoney(p.amount, p.gig);
+    const area = document.getElementById("puzzleArea");
+    area.innerHTML = `<div class="puzzle-success">💰 $${p.amount} added! You earned the money by solving the puzzle.</div>`;
+    this.updateGigButtons();
+  },
+
+  updateGigButtons: function() {
+    for (let i = 0; i < this.puzzles.length; i++) {
+      const btn = document.getElementById("gig" + i);
+      if (!btn) continue;
+      const status = this.state.puzzlesSolved[i];
+      if (status === "claimed") {
+        btn.textContent = "Earned ✓";
+        btn.disabled = true;
+        btn.classList.remove("locked");
+      } else if (status === true) {
+        btn.textContent = "Unlocked 💵";
+        btn.classList.remove("locked");
+      } else {
+        btn.textContent = "🔒 Solve Puzzle";
+        btn.classList.add("locked");
+      }
+    }
+  },
+
+  earnMoney: function(amount, name) {
+    this.state.balance += amount;
+    this.state.earned += amount;
+    this.state.score += 1;
+    this.showFeedback("💵 You earned $" + amount + " from " + name + "! Great job taking initiative!");
+    this.update();
+  },
+
+  payBill: function(i) {
+    if (this.state.paid[i]) return;
+    let cost = this.bills[i][1];
+    this.state.balance -= cost;
+    this.state.spent += cost;
+    this.state.paid[i] = true;
+    this.state.score += 2;
+    document.getElementById("bill" + i).textContent = "Paid ✓";
+    document.getElementById("bill" + i).disabled = true;
+    this.update();
+  },
+
+  buy: function(cost, name) {
+    if (this.state.balance < cost) {
+      alert("You don't have enough money for this purchase right now.");
+      return;
+    }
+    this.state.balance -= cost;
+    this.state.spent += cost;
+    this.state.score -= 1;
+    this.showFeedback("You spent $" + cost + " on " + name + ". Was it worth it?");
+    this.update();
+  },
+
+  nextDay: function() {
+    if (this.state.day >= 30) {
+      this.finishGame();
+      return;
+    }
+    this.state.day++;
+    
+    if (Math.random() < 0.23) {
+      this.state.emergencies++;
+      let e = this.events[Math.floor(Math.random() * this.events.length)];
+      let choicesHTML = `<h3>${e.title}</h3><p>${e.text}</p>`;
+      e.choices.forEach(c => {
+        choicesHTML += `<button class="choice" onclick="window.gameApp.chooseEvent(${c[1]}, ${c[2]}, '${c[0].replace(/'/g, "\\'")}')">${c[0]}</button>`;
+      });
+      document.getElementById("event").innerHTML = choicesHTML;
+    } else {
+      document.getElementById("event").innerHTML = `<h3>🌤️ Normal day</h3><p>No surprise today. Keep watching your spending.</p><button onclick="window.gameApp.nextDay()">Next Day ➜</button>`;
+    }
+    this.update();
+  },
+
+  chooseEvent: function(cost, points, label) {
+    if (cost > this.state.balance) {
+      this.showFeedback("⚠️ You couldn't afford that choice. It costs 5 points.");
+      this.state.score -= 5;
+    } else {
+      this.state.balance -= cost;
+      this.state.spent += cost;
+      this.state.score += points;
+      this.showFeedback("You chose: " + label);
+    }
+    document.getElementById("event").innerHTML = '<h3>Decision made! ✓</h3><p>Keep going.</p><button onclick="window.gameApp.nextDay()">Continue ➜</button>';
+    this.update();
+  },
+
+  showFeedback: function(t) {
+    document.getElementById("feedback").innerHTML = '<div class="feedback">' + t + '</div>';
+  },
+
+  newTip: function() {
+    document.getElementById("tip").textContent = this.tips[Math.floor(Math.random() * this.tips.length)];
+  },
+
+  finishGame: function() {
+    let final = this.state.balance >= 500 ? this.state.score + 10 : this.state.score;
+    let rating = final >= 35 ? "🏆 Budget Boss" : final >= 20 ? "👍 Money Manager" : final >= 10 ? "🙂 Getting There" : "🧠 Learning the Hard Way";
+    let student = document.getElementById("student").value || "Student";
+    
+    document.getElementById("game").classList.add("hidden");
+    let r = document.getElementById("results");
+    r.classList.remove("hidden");
+    r.innerHTML = `<h2>🎉 ${student}'s Month Is Complete!</h2>
+      <div class="big">${rating}</div>
+      <p>You earned <b>${this.money(this.state.earned)}</b> and spent <b>${this.money(this.state.spent)}</b>.</p>
+      <p>You finished with <b>${this.money(this.state.balance)}</b> and scored <b>${final} points</b>.</p>
+      <hr>
+      <h3>Think About It 🤔</h3>
+      <ul>
+        <li>Did earning extra money help you reach your savings goal?</li>
+        <li>Which income opportunity was easiest to earn from?</li>
+        <li>Which expense was hardest to afford?</li>
+        <li>Which choice helped your budget the most?</li>
+        <li>Did you spend money on any wants that you could have skipped?</li>
+        <li>How would earning more money change your decisions?</li>
+        <li>What would you change if you played again?</li>
+      </ul>
+      <button onclick="location.reload()">Play Again 🔄</button>
+      <button class="secondary" onclick="window.gameApp.showTeacher()">Teacher Discussion Guide</button>`;
+  },
+
+  showTeacher: function() {
+    alert("CLASS DISCUSSION:\n\n1. What is the difference between a need and a want?\n2. Why is an emergency fund useful?\n3. Which job gave you the most flexibility?\n4. How did earning extra money change your budget?\n5. What side gigs could you do in real life to earn money?\n6. How would you balance work and school if you took on side gigs?");
+  }
+};
+
+window.gameApp.renderBills();
+  </script>
 </body>
 </html>
