@@ -82,6 +82,12 @@
       background: #e8edf3;
       color: #17212b;
     }
+    button.earn {
+      background: #3ca66b;
+    }
+    button.earn:hover {
+      filter: brightness(.95);
+    }
     button.warn {
       background: #c87b20;
     }
@@ -147,6 +153,10 @@
     .want {
       background: #fff3df;
       color: #966018;
+    }
+    .income-pill {
+      background: #e8f7ed;
+      color: #1b7a44;
     }
     .event {
       background: #fff7df;
@@ -248,6 +258,15 @@
       <div class="grid">
         <main>
           <section class="card">
+            <h2>💼 Step 1: Earn Extra Money (Optional)</h2>
+            <p class="small">Take on side gigs to earn extra cash. Use this to help pay bills or save more!</p>
+            <div class="expense"><span>📦 Freelance project <span class="pill income-pill">INCOME</span></span><b>+$35</b><button class="earn" onclick="window.gameApp.earnMoney(35,'Freelance project')">Earn</button></div>
+            <div class="expense"><span>🧹 Chores for family <span class="pill income-pill">INCOME</span></span><b>+$15</b><button class="earn" onclick="window.gameApp.earnMoney(15,'Chores for family')">Earn</button></div>
+            <div class="expense"><span>📚 Tutoring <span class="pill income-pill">INCOME</span></span><b>+$25</b><button class="earn" onclick="window.gameApp.earnMoney(25,'Tutoring')">Earn</button></div>
+            <div class="expense"><span>🚲 Delivery service <span class="pill income-pill">INCOME</span></span><b>+$40</b><button class="earn" onclick="window.gameApp.earnMoney(40,'Delivery service')">Earn</button></div>
+          </section>
+
+          <section class="card">
             <h2>🏠 Step 2: Pay Your Monthly Needs</h2>
             <p class="small">Needs are things you generally must pay for. Pay each bill once per month.</p>
             <div id="bills"></div>
@@ -276,6 +295,7 @@
         <aside>
           <section class="card">
             <h2>📊 My Budget</h2>
+            <p>Money earned: <b id="earned">$0</b></p>
             <p>Money spent: <b id="spent">$0</b></p>
             <p>Emergencies handled: <b id="emergencies">0</b></p>
             <p>Savings goal: <b>$500</b></p>
@@ -291,6 +311,7 @@
           <section class="card">
             <h2>🎯 Your Mission</h2>
             <ul>
+              <li>Earn extra money with side gigs.</li>
               <li>Pay your needs.</li>
               <li>Make smart choices about wants.</li>
               <li>Handle emergencies.</li>
@@ -311,6 +332,7 @@ window.gameApp = {
   state: {
     balance: 0,
     income: 0,
+    earned: 0,
     spent: 0,
     day: 0,
     score: 0,
@@ -380,7 +402,9 @@ window.gameApp = {
     "$4 every day for 30 days would cost $120. Small purchases can add up!",
     "Before buying something, ask: Do I need it, or do I want it?",
     "A good budget leaves room for both necessities and fun.",
-    "Saving money is a choice you make with every purchase."
+    "Saving money is a choice you make with every purchase.",
+    "Side gigs can help you earn extra money to reach your savings goals faster.",
+    "Time is money—earning extra income requires effort but pays off!"
   ],
 
   money: function(n) {
@@ -401,6 +425,7 @@ window.gameApp = {
   startGame: function() {
     this.state.income = +document.getElementById("job").value;
     this.state.balance = this.state.income / 2 + +document.getElementById("savings").value;
+    this.state.earned = 0;
     this.state.spent = 0;
     this.state.day = 1;
     this.state.score = 0;
@@ -418,6 +443,7 @@ window.gameApp = {
   update: function() {
     document.getElementById("balance").textContent = this.money(this.state.balance);
     document.getElementById("balance").className = "money " + (this.state.balance < 0 ? "negative" : "");
+    document.getElementById("earned").textContent = this.money(this.state.earned);
     document.getElementById("spent").textContent = this.money(this.state.spent);
     document.getElementById("emergencies").textContent = this.state.emergencies;
     document.getElementById("day").textContent = this.state.day;
@@ -431,6 +457,14 @@ window.gameApp = {
     } else {
       document.getElementById("goalText").textContent = "Try to finish with at least $500.";
     }
+  },
+
+  earnMoney: function(amount, name) {
+    this.state.balance += amount;
+    this.state.earned += amount;
+    this.state.score += 1;
+    this.showFeedback("💵 You earned $" + amount + " from " + name + "! Great job taking initiative!");
+    this.update();
   },
 
   payBill: function(i) {
@@ -510,15 +544,17 @@ window.gameApp = {
     r.classList.remove("hidden");
     r.innerHTML = `<h2>🎉 ${student}'s Month Is Complete!</h2>
       <div class="big">${rating}</div>
-      <p>You finished with <b>${this.money(this.state.balance)}</b> and spent <b>${this.money(this.state.spent)}</b>.</p>
-      <p>Your score: <b>${final} points</b></p>
+      <p>You earned <b>${this.money(this.state.earned)}</b> and spent <b>${this.money(this.state.spent)}</b>.</p>
+      <p>You finished with <b>${this.money(this.state.balance)}</b> and scored <b>${final} points</b>.</p>
       <hr>
       <h3>Think About It 🤔</h3>
       <ul>
+        <li>Did earning extra money help you reach your savings goal?</li>
+        <li>Which income opportunity was easiest to earn from?</li>
         <li>Which expense was hardest to afford?</li>
         <li>Which choice helped your budget the most?</li>
         <li>Did you spend money on any wants that you could have skipped?</li>
-        <li>How would having $1,000 in savings change your decisions?</li>
+        <li>How would earning more money change your decisions?</li>
         <li>What would you change if you played again?</li>
       </ul>
       <button onclick="location.reload()">Play Again 🔄</button>
@@ -526,7 +562,7 @@ window.gameApp = {
   },
 
   showTeacher: function() {
-    alert("CLASS DISCUSSION:\n\n1. What is the difference between a need and a want?\n2. Why is an emergency fund useful?\n3. Which job gave you the most flexibility?\n4. How did small purchases affect your budget?\n5. What surprised you about budgeting?");
+    alert("CLASS DISCUSSION:\n\n1. What is the difference between a need and a want?\n2. Why is an emergency fund useful?\n3. Which job gave you the most flexibility?\n4. How did earning extra money change your budget?\n5. What side gigs could you do in real life to earn money?\n6. How would you balance work and school if you took on side gigs?");
   }
 };
 
